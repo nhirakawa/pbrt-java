@@ -1,8 +1,8 @@
 grammar Pbrt;
 
-@header {
-	package com.github.nhirakawa.pbrt;
-}
+//@header {
+//	package com.github.nhirakawa.pbrt.java.parse;
+//}
 
 type
   : integer
@@ -163,16 +163,16 @@ materialType
   | '"uber"' # uber
   ;
 
-shape : 'Shape' shapeType parameterList ;
+shape : 'Shape' '"' shapeType '"' parameterList ;
 shapeType
-  : '"cone"' # cone
-  | '"curve"' # curve
-  | '"cylinder"' # cylinder
-  | '"disk"' # disk
-  | '"hyperboloid"' # hyperboloid
-  | '"paraboloid"' # paraboloid
-  | '"sphere' # sphere
-  | '"trianglemesh"' # triangleMesh
+  : 'cone' # cone
+  | 'curve' # curve
+  | 'cylinder' # cylinder
+  | 'disk' # disk
+  | 'hyperboloid' # hyperboloid
+  | 'paraboloid' # paraboloid
+  | 'sphere' # sphere
+  | 'trianglemesh' # triangleMesh
   ;
 
 texture : 'Texture' '"' name '"' '"' type '"' textureClass parameterList ;
