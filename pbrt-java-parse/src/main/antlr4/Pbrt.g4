@@ -74,8 +74,8 @@ lookAtUpZ : numberArrayLiteral ;
 
 coordinateSystem : 'CoordinateSystem' '"' name '"';
 coordinateSystemTransform : 'CoordSysTransform' '"' name '"' ;
-transform : 'Transform' ;
-concatTransform : 'ConcatTransform' ;
+transform : 'Transform' numberArrayLiteral ;
+concatTransform : 'ConcatTransform' numberArrayLiteral ;
 
 m00 : numberArrayLiteral ;
 m01 : numberArrayLiteral ;
@@ -193,6 +193,8 @@ textureClass
   | '"wrinkled"' # wrinkled
   ;
 
+include : 'Include' stringLiteral ;
+
 attribute : 'AttributeBegin' attributeObject* 'AttributeEnd' ;
 attributeObject
   : material
@@ -207,6 +209,7 @@ sceneObject
   | lightSource
   | material
   | texture
+  | include
   ;
 
 world : 'WorldBegin' scene 'WorldEnd' ;
