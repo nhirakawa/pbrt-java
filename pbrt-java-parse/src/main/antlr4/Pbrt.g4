@@ -12,7 +12,6 @@ type
   | point3
   | vector3
   | normal3
-  | spectrum
   | bool
   | stringType
   | rgb
@@ -25,7 +24,6 @@ vector2 : 'vector2' ;
 point3 : 'point3' | 'point' ;
 vector3 : 'vector3' | 'vector' ;
 normal3 : 'normal3' | 'normal' ;
-spectrum : 'spectrum' ;
 bool : 'bool' ;
 stringType : 'string' ;
 rgb : 'rgb' | 'color' | 'xyz' | 'spectrum' | 'blackbody' ;
