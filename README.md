@@ -1,4 +1,7 @@
 # pbrt-java
+
+[![Build Status](https://travis-ci.org/nhirakawa/pbrt-java.svg?branch=master)](https://travis-ci.org/nhirakawa/pbrt-java)
+
 A pbrt implementation in Java
 
 ## Goals
