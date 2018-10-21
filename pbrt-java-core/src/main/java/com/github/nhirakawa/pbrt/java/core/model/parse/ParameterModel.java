@@ -1,4 +1,4 @@
-package com.github.nhirakawa.pbrt.java.core.model;
+package com.github.nhirakawa.pbrt.java.core.model.parse;
 
 import java.util.Locale;
 import java.util.Optional;
@@ -7,6 +7,7 @@ import org.immutables.value.Value;
 
 import com.github.nhirakawa.immutable.style.ImmutableStyle;
 import com.google.common.primitives.Doubles;
+import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 
 @Value.Immutable
@@ -21,6 +22,15 @@ public interface ParameterModel {
   default Optional<Double> getAsDouble() {
     if (getType().toLowerCase(Locale.ENGLISH).equals("float")) {
       return Optional.ofNullable(Doubles.tryParse(getValue()));
+    }
+
+    return Optional.empty();
+  }
+
+  @Value.Lazy
+  default Optional<Integer> getAsInt() {
+    if (getType().toLowerCase(Locale.ENGLISH).equals("integer")) {
+      return Optional.ofNullable(Ints.tryParse(getValue()));
     }
 
     return Optional.empty();

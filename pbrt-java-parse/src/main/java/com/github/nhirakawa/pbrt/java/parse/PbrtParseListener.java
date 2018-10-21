@@ -14,16 +14,20 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.nhirakawa.pbrt.java.core.model.Parameter;
-import com.github.nhirakawa.pbrt.java.core.model.Parameters;
 import com.github.nhirakawa.pbrt.java.core.model.camera.Camera;
 import com.github.nhirakawa.pbrt.java.core.model.camera.CameraType;
 import com.github.nhirakawa.pbrt.java.core.model.camera.PerspectiveCamera;
+import com.github.nhirakawa.pbrt.java.core.model.parse.Parameter;
+import com.github.nhirakawa.pbrt.java.core.model.parse.Parameters;
+import com.github.nhirakawa.pbrt.java.core.model.sampler.HaltonSampler;
+import com.github.nhirakawa.pbrt.java.core.model.sampler.Sampler;
+import com.github.nhirakawa.pbrt.java.core.model.sampler.SamplerType;
 import com.github.nhirakawa.pbrt.java.core.model.transform.LookAt;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.CameraContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.LookAtContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ParameterContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ParameterListContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.SamplerContext;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
 
@@ -79,6 +83,27 @@ public class PbrtParseListener extends PbrtBaseListener {
         return PerspectiveCamera.from(parameters);
       default:
         throw new IllegalArgumentException(cameraType + " is not a supported camera type");
+    }
+  }
+
+  @Override
+  public void exitSampler(SamplerContext samplerContext) {
+    SamplerType samplerType = SamplerType.valueOf(samplerContext.samplerType().getText().toUpperCase(Locale.ENGLISH));
+    Parameters parameters = toParameters(samplerContext.parameterList());
+
+    Sampler sampler = buildSampler(samplerType, parameters);
+
+    LOG.info("Sampler - {}", sampler);
+
+    super.exitSampler(samplerContext);
+  }
+
+  private Sampler buildSampler(SamplerType samplerType, Parameters parameters) {
+    switch (samplerType) {
+      case HALTON:
+        return HaltonSampler.from(parameters);
+      default:
+        throw new IllegalArgumentException(samplerType + "is not a supported sampler type");
     }
   }
 
