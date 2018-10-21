@@ -1,37 +1,50 @@
 package com.github.nhirakawa.pbrt.java.core.model.camera;
 
+import java.util.Optional;
+
 import org.immutables.value.Value;
 
 import com.github.nhirakawa.immutable.style.ImmutableStyle;
+import com.github.nhirakawa.pbrt.java.core.model.Parameter;
+import com.github.nhirakawa.pbrt.java.core.model.Parameters;
 
 @Value.Immutable
 @ImmutableStyle
-public interface AbstractPerspectiveCamera extends Camera {
+public abstract class AbstractPerspectiveCamera implements Camera {
 
   @Override
   @Value.Auxiliary
-  default CameraType getCameraType() {
+  public CameraType getCameraType() {
     return CameraType.PERSPECTIVE;
   }
 
-  float getFrameAspectRatio();
-  float getScreenWindow();
+  public abstract Optional<Double> getFrameAspectRatio();
+  public abstract Optional<Double> getScreenWindow();
 
   @Value.Default
-  default double getLensRadius() {
+  public double getLensRadius() {
     return 0;
   }
 
   @Value.Default
-  default double getFocalDistance() {
+  public double getFocalDistance() {
     return Math.pow(10, 30);
   }
 
   @Value.Default
-  default double getFov() {
+  public double getFov() {
     return 90;
   }
 
-  double getHalfFov();
+  public abstract Optional<Double> getHalfFov();
+
+  public static PerspectiveCamera from(Parameters parameters) {
+    PerspectiveCamera.Builder builder = PerspectiveCamera.builder();
+
+    Optional<Double> fov = parameters.getParameter("fov").flatMap(Parameter::getAsDouble);
+    fov.ifPresent(builder::setFov);
+
+    return builder.build();
+  }
 
 }
