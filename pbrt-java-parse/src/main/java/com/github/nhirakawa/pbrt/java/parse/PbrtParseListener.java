@@ -19,6 +19,7 @@ import com.github.nhirakawa.pbrt.java.core.model.camera.CameraType;
 import com.github.nhirakawa.pbrt.java.core.model.camera.PerspectiveCamera;
 import com.github.nhirakawa.pbrt.java.core.model.integrator.Integrator;
 import com.github.nhirakawa.pbrt.java.core.model.integrator.PathIntegrator;
+import com.github.nhirakawa.pbrt.java.core.model.film.ImageFilm;
 import com.github.nhirakawa.pbrt.java.core.model.parse.Parameter;
 import com.github.nhirakawa.pbrt.java.core.model.parse.Parameters;
 import com.github.nhirakawa.pbrt.java.core.model.sampler.HaltonSampler;
@@ -27,10 +28,13 @@ import com.github.nhirakawa.pbrt.java.core.model.sampler.SamplerType;
 import com.github.nhirakawa.pbrt.java.core.model.transform.LookAt;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.CameraContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.IntegratorContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.FilmContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.LookAtContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.NumberArrayLiteralContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ParameterContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ParameterListContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.SamplerContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ValueContext;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
 
@@ -116,9 +120,19 @@ public class PbrtParseListener extends PbrtBaseListener {
 
     Integrator integrator = PathIntegrator.from(parameters);
 
-    LOG.info("Integrator - {}",integrator);
+    LOG.info("Integrator - {}", integrator);
 
     super.exitIntegrator(integratorContext);
+  }
+
+  public void exitFilm(FilmContext ctx) {
+    Parameters parameters = toParameters(ctx.parameterList());
+
+    ImageFilm imageFilm = ImageFilm.from(parameters);
+
+    LOG.info("ImageFilm - {}", imageFilm);
+
+    super.exitFilm(ctx);
   }
 
   @Override
@@ -153,10 +167,24 @@ public class PbrtParseListener extends PbrtBaseListener {
   }
 
   private static Parameter toParamater(ParameterContext parameterContext) {
-    return Parameter.builder()
+    Parameter.Builder builder = Parameter.builder()
         .setName(parameterContext.name().getText())
-        .setType(parameterContext.type().getText())
-        .setValue(parameterContext.value().getText())
-        .build();
+        .setType(parameterContext.type().getText());
+
+    ValueContext valueContext = parameterContext.value();
+    if (valueContext.numberArrayLiteral() != null) {
+      NumberArrayLiteralContext numberArrayLiteralContext = valueContext.numberArrayLiteral();
+      if (numberArrayLiteralContext.singleValueArray() != null) {
+        builder.setValue(numberArrayLiteralContext.singleValueArray().numberLiteral().getText());
+      } else if (numberArrayLiteralContext.numberLiteral() != null) {
+        builder.setValue(numberArrayLiteralContext.numberLiteral().getText());
+      } else {
+        builder.setValue(numberArrayLiteralContext.getText());
+      }
+    } else {
+      builder.setValue(parameterContext.getText());
+    }
+
+    return builder.build();
   }
 }

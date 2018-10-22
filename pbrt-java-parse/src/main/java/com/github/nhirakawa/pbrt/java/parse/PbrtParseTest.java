@@ -11,13 +11,13 @@ public class PbrtParseTest {
   private static void doTestRigForActualGrammar() throws Exception {
     new TestRig(
         new String[]{
-            "com.github.nhirakawa.pbrt.Pbrt",
+            "com.github.nhirakawa.pbrt.java.parse.Pbrt",
             "pbrt",
             "-tokens",
             "-gui",
             "-diagnostics",
             "-trace",
-            "C:\\Users\\Nick\\workspace\\pbrt-java\\pbrt-java-parse\\src\\main\\resources\\ball.pbrt"
+            "/home/nick/src/pbrt-java/pbrt-java-parse/src/main/resources/ball.pbrt"
         }
     ).process();
   }
