@@ -5,8 +5,8 @@ import java.util.Optional;
 import org.immutables.value.Value;
 
 import com.github.nhirakawa.immutable.style.ImmutableStyle;
-import com.github.nhirakawa.pbrt.java.core.model.Parameter;
-import com.github.nhirakawa.pbrt.java.core.model.Parameters;
+import com.github.nhirakawa.pbrt.java.core.model.parse.Parameter;
+import com.github.nhirakawa.pbrt.java.core.model.parse.Parameters;
 
 @Value.Immutable
 @ImmutableStyle

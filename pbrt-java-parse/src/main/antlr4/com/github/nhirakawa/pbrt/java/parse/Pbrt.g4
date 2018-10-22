@@ -114,14 +114,14 @@ cameraType
   | 'realistic' # realistic
   ;
 
-sampler : 'Sampler' samplerType parameterList ;
+sampler : 'Sampler' '"' samplerType '"' parameterList ;
 samplerType
-  : ('"02sequence"' | '"lowdiscrepancy"') # zeroTwoSequence
-  | '"halton"' # halton
-  | '"maxmindist"' # maxMinDist
-  | '"random"' # random
-  | '"sobol"' # sobol
-  | '"stratified"' # stratified
+  : ('02sequence' | 'lowdiscrepancy') # zeroTwoSequence
+  | 'halton' # halton
+  | 'maxmindist' # maxMinDist
+  | 'random' # random
+  | 'sobol' # sobol
+  | 'stratified' # stratified
   ;
 
 integrator : 'Integrator' integratorType parameterList ;

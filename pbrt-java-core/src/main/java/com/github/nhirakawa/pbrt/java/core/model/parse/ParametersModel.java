@@ -1,4 +1,4 @@
-package com.github.nhirakawa.pbrt.java.core.model;
+package com.github.nhirakawa.pbrt.java.core.model.parse;
 
 import java.util.List;
 import java.util.Map;
