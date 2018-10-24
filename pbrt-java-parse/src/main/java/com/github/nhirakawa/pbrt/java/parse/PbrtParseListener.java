@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import com.github.nhirakawa.pbrt.java.core.model.camera.Camera;
 import com.github.nhirakawa.pbrt.java.core.model.camera.CameraType;
 import com.github.nhirakawa.pbrt.java.core.model.camera.PerspectiveCamera;
+import com.github.nhirakawa.pbrt.java.core.model.integrator.Integrator;
+import com.github.nhirakawa.pbrt.java.core.model.integrator.PathIntegrator;
 import com.github.nhirakawa.pbrt.java.core.model.parse.Parameter;
 import com.github.nhirakawa.pbrt.java.core.model.parse.Parameters;
 import com.github.nhirakawa.pbrt.java.core.model.sampler.HaltonSampler;
@@ -24,6 +26,7 @@ import com.github.nhirakawa.pbrt.java.core.model.sampler.Sampler;
 import com.github.nhirakawa.pbrt.java.core.model.sampler.SamplerType;
 import com.github.nhirakawa.pbrt.java.core.model.transform.LookAt;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.CameraContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.IntegratorContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.LookAtContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ParameterContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ParameterListContext;
@@ -105,6 +108,17 @@ public class PbrtParseListener extends PbrtBaseListener {
       default:
         throw new IllegalArgumentException(samplerType + "is not a supported sampler type");
     }
+  }
+
+  @Override
+  public void exitIntegrator(IntegratorContext integratorContext) {
+    Parameters parameters = toParameters(integratorContext.parameterList());
+
+    Integrator integrator = PathIntegrator.from(parameters);
+
+    LOG.info("Integrator - {}",integrator);
+
+    super.exitIntegrator(integratorContext);
   }
 
   @Override
