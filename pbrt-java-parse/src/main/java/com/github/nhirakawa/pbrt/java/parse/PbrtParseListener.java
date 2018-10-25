@@ -1,8 +1,10 @@
 package com.github.nhirakawa.pbrt.java.parse;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -14,28 +16,37 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.nhirakawa.pbrt.java.core.model.ParameterUtils;
+import com.github.nhirakawa.pbrt.java.core.model.Point3;
 import com.github.nhirakawa.pbrt.java.core.model.camera.Camera;
 import com.github.nhirakawa.pbrt.java.core.model.camera.CameraType;
 import com.github.nhirakawa.pbrt.java.core.model.camera.PerspectiveCamera;
+import com.github.nhirakawa.pbrt.java.core.model.film.ImageFilm;
 import com.github.nhirakawa.pbrt.java.core.model.integrator.Integrator;
 import com.github.nhirakawa.pbrt.java.core.model.integrator.PathIntegrator;
-import com.github.nhirakawa.pbrt.java.core.model.film.ImageFilm;
 import com.github.nhirakawa.pbrt.java.core.model.parse.Parameter;
 import com.github.nhirakawa.pbrt.java.core.model.parse.Parameters;
 import com.github.nhirakawa.pbrt.java.core.model.sampler.HaltonSampler;
 import com.github.nhirakawa.pbrt.java.core.model.sampler.Sampler;
 import com.github.nhirakawa.pbrt.java.core.model.sampler.SamplerType;
+import com.github.nhirakawa.pbrt.java.core.model.shape.Shape;
+import com.github.nhirakawa.pbrt.java.core.model.shape.ShapeType;
+import com.github.nhirakawa.pbrt.java.core.model.shape.Sphere;
+import com.github.nhirakawa.pbrt.java.core.model.shape.TriangleMesh;
 import com.github.nhirakawa.pbrt.java.core.model.transform.LookAt;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.CameraContext;
-import com.github.nhirakawa.pbrt.java.parse.PbrtParser.IntegratorContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.FilmContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.IntegratorContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.LookAtContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.NumberArrayLiteralContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.NumberLiteralContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ParameterContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ParameterListContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.SamplerContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ShapeContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ValueContext;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 
 public class PbrtParseListener extends PbrtBaseListener {
@@ -136,6 +147,56 @@ public class PbrtParseListener extends PbrtBaseListener {
   }
 
   @Override
+  public void enterShape(ShapeContext shapeContext) {
+    ShapeType shapeType = ShapeType.valueOf(shapeContext.shapeType().getText().toUpperCase());
+
+    Shape shape = buildShape(shapeType, shapeContext.parameterList());
+
+    LOG.info("Shape - {}", shape);
+
+    super.enterShape(shapeContext);
+  }
+
+  private Shape buildShape(ShapeType shapeType, ParameterListContext parameterListContext) {
+    Parameters parameters = toParameters(parameterListContext);
+    switch (shapeType) {
+      case SPHERE:
+        return buildSphere(parameters);
+      case TRIANGLEMESH:
+        return buildTriangleMesh(parameters);
+      default:
+        throw new IllegalArgumentException(shapeType + " is not a valid shape type");
+    }
+  }
+
+  private Sphere buildSphere(Parameters parameters) {
+    Optional<Double> radius = parameters.getParameter("radius").flatMap(Parameter::getAsDouble);
+
+    Sphere.Builder builder = Sphere.builder();
+    radius.ifPresent(builder::setRadius);
+
+    return builder.build();
+  }
+
+  private TriangleMesh buildTriangleMesh(Parameters parameters) {
+    TriangleMesh.Builder builder = TriangleMesh.builder();
+
+    Optional<List<Integer>> indices = parameters.getParameter("indices").map(Parameter::getAsListOfIntegers);
+    indices.ifPresent(builder::addAllIndices);
+
+    List<Integer> rawCoordinates = parameters.getParameter("P").map(Parameter::getAsListOfIntegers).orElse(Collections.emptyList());
+    List<List<Integer>> partitionedCoordinates = Lists.partition(rawCoordinates, 3);
+    List<Point3> points = partitionedCoordinates.stream()
+        .map(Point3::fromInts)
+        .collect(ImmutableList.toImmutableList());
+
+    return TriangleMesh.builder()
+        .setIndices(indices.get())
+        .setPoints(points)
+        .build();
+  }
+
+  @Override
   public void exitEveryRule(ParserRuleContext parserRuleContext) {
     super.exitEveryRule(parserRuleContext);
   }
@@ -178,8 +239,11 @@ public class PbrtParseListener extends PbrtBaseListener {
         builder.setValue(numberArrayLiteralContext.singleValueArray().numberLiteral().getText());
       } else if (numberArrayLiteralContext.numberLiteral() != null) {
         builder.setValue(numberArrayLiteralContext.numberLiteral().getText());
-      } else {
-        builder.setValue(numberArrayLiteralContext.getText());
+      } else if (numberArrayLiteralContext.multipleValueArray() != null) {
+        String joinedValue = numberArrayLiteralContext.multipleValueArray().numberLiteral().stream()
+            .map(NumberLiteralContext::getText)
+            .collect(ParameterUtils.collector());
+        builder.setValue(joinedValue);
       }
     } else {
       builder.setValue(parameterContext.getText());
