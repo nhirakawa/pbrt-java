@@ -31,10 +31,13 @@ textureType : 'texture' ;
 
 boolLiteral : 'true' | 'false' ;
 stringLiteral : '"' ~('"')* '"' ;
+numberLiteral : NUMBER;
+singleValueArray : '[' numberLiteral ']' ;
+multipleValueArray : '[' numberLiteral numberLiteral+ ']' ;
 numberArrayLiteral
-  : NUMBER # singleValue
-  | '[' NUMBER ']' # singleValueArray
-  | '[' NUMBER NUMBER+ ']' # multipleValues
+  : numberLiteral
+  | singleValueArray
+  | multipleValueArray
   ;
 
 ID : [a-zA-Z][a-zA-Z0-9]* ;
