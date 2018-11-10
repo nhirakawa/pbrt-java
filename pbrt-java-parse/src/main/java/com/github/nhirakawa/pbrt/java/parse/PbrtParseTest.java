@@ -17,7 +17,7 @@ public class PbrtParseTest {
             "-gui",
             "-diagnostics",
             "-trace",
-            "/home/nick/src/pbrt-java/pbrt-java-parse/src/main/resources/ball.pbrt"
+            "C:\\Users\\Nick\\workspace\\pbrt-java\\pbrt-java-parse\\src\\main\\resources\\ball.pbrt"
         }
     ).process();
   }

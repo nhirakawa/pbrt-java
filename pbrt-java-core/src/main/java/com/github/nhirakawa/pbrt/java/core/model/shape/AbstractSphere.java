@@ -35,6 +35,7 @@ public interface AbstractSphere extends Shape {
   }
 
   @Override
+  @Value.Derived
   default ShapeType getShapeType() {
     return ShapeType.SPHERE;
   }
