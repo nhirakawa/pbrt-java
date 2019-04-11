@@ -35,6 +35,14 @@
       <artifactId>guava</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.derive4j</groupId>
+      <artifactId>derive4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.derive4j</groupId>
+      <artifactId>derive4j-annotation</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.immutables</groupId>
       <artifactId>value</artifactId>
     </dependency>
