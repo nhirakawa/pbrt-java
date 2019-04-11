@@ -5,8 +5,6 @@ import java.util.Optional;
 import org.immutables.value.Value;
 
 import com.github.nhirakawa.immutable.style.ImmutableStyle;
-import com.github.nhirakawa.pbrt.java.core.model.parse.Parameter;
-import com.github.nhirakawa.pbrt.java.core.model.parse.Parameters;
 
 @Value.Immutable
 @ImmutableStyle
@@ -37,14 +35,4 @@ public abstract class AbstractPerspectiveCamera implements Camera {
   }
 
   public abstract Optional<Double> getHalfFov();
-
-  public static PerspectiveCamera from(Parameters parameters) {
-    PerspectiveCamera.Builder builder = PerspectiveCamera.builder();
-
-    Optional<Double> fov = parameters.getParameter("fov").flatMap(Parameter::getAsDouble);
-    fov.ifPresent(builder::setFov);
-
-    return builder.build();
-  }
-
 }

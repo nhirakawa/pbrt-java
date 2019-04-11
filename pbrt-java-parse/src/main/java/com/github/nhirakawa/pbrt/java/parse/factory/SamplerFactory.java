@@ -2,9 +2,9 @@ package com.github.nhirakawa.pbrt.java.parse.factory;
 
 import java.util.Optional;
 
-import com.github.nhirakawa.pbrt.java.core.model.parse.Parameter;
-import com.github.nhirakawa.pbrt.java.core.model.parse.Parameters;
 import com.github.nhirakawa.pbrt.java.core.model.sampler.HaltonSampler;
+import com.github.nhirakawa.pbrt.java.parse.model.Parameter;
+import com.github.nhirakawa.pbrt.java.parse.model.Parameters;
 
 public final class SamplerFactory {
 

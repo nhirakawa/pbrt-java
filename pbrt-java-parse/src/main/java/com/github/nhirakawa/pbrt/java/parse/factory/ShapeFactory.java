@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Optional;
 
 import com.github.nhirakawa.pbrt.java.core.model.Point3;
-import com.github.nhirakawa.pbrt.java.core.model.parse.Parameter;
-import com.github.nhirakawa.pbrt.java.core.model.parse.Parameters;
 import com.github.nhirakawa.pbrt.java.core.model.shape.Sphere;
 import com.github.nhirakawa.pbrt.java.core.model.shape.TriangleMesh;
+import com.github.nhirakawa.pbrt.java.parse.model.Parameter;
+import com.github.nhirakawa.pbrt.java.parse.model.Parameters;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 

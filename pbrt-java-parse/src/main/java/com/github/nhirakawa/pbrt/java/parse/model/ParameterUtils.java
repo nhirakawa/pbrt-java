@@ -1,4 +1,4 @@
-package com.github.nhirakawa.pbrt.java.core.model;
+package com.github.nhirakawa.pbrt.java.parse.model;
 
 import java.util.stream.Collector;
 import java.util.stream.Collectors;

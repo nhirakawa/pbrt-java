@@ -12,7 +12,6 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.nhirakawa.pbrt.java.core.model.ParameterUtils;
 import com.github.nhirakawa.pbrt.java.core.model.camera.CameraAdt;
 import com.github.nhirakawa.pbrt.java.core.model.camera.CameraAdts;
 import com.github.nhirakawa.pbrt.java.core.model.camera.PerspectiveCamera;
@@ -20,8 +19,6 @@ import com.github.nhirakawa.pbrt.java.core.model.film.ImageFilm;
 import com.github.nhirakawa.pbrt.java.core.model.integrator.IntegratorAdt;
 import com.github.nhirakawa.pbrt.java.core.model.integrator.IntegratorAdts;
 import com.github.nhirakawa.pbrt.java.core.model.integrator.PathIntegrator;
-import com.github.nhirakawa.pbrt.java.core.model.parse.Parameter;
-import com.github.nhirakawa.pbrt.java.core.model.parse.Parameters;
 import com.github.nhirakawa.pbrt.java.core.model.sampler.HaltonSampler;
 import com.github.nhirakawa.pbrt.java.core.model.sampler.SamplerAdt;
 import com.github.nhirakawa.pbrt.java.core.model.sampler.SamplerAdts;
@@ -62,9 +59,13 @@ import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ValueContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.WhittedIntegratorContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ZeroTwoSequenceSamplerContext;
 import com.github.nhirakawa.pbrt.java.parse.factory.CameraFactory;
+import com.github.nhirakawa.pbrt.java.parse.factory.ImageFactory;
 import com.github.nhirakawa.pbrt.java.parse.factory.IntegratorFactory;
 import com.github.nhirakawa.pbrt.java.parse.factory.SamplerFactory;
 import com.github.nhirakawa.pbrt.java.parse.factory.ShapeFactory;
+import com.github.nhirakawa.pbrt.java.parse.model.Parameter;
+import com.github.nhirakawa.pbrt.java.parse.model.ParameterUtils;
+import com.github.nhirakawa.pbrt.java.parse.model.Parameters;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
 
@@ -203,11 +204,9 @@ public class PbrtParseListener extends PbrtBaseListener {
   public void exitFilm(FilmContext ctx) {
     Parameters parameters = toParameters(ctx.parameterList());
 
-    ImageFilm imageFilm = ImageFilm.from(parameters);
+    ImageFilm imageFilm = ImageFactory.toImage(parameters);
 
     LOG.info("ImageFilm - {}", imageFilm);
-
-    super.exitFilm(ctx);
   }
 
   // Shapes

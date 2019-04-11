@@ -1,13 +1,10 @@
 package com.github.nhirakawa.pbrt.java.core.model.film;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.immutables.value.Value;
 
 import com.github.nhirakawa.immutable.style.ImmutableStyle;
-import com.github.nhirakawa.pbrt.java.core.model.parse.Parameter;
-import com.github.nhirakawa.pbrt.java.core.model.parse.Parameters;
 
 @Value.Immutable
 @ImmutableStyle
@@ -51,18 +48,4 @@ public abstract class AbstractImageFilm implements Film {
     return 35;
   }
 
-  public static ImageFilm from(Parameters parameters) {
-    ImageFilm.Builder builder = ImageFilm.builder();
-
-    Optional<String> filename = parameters.getParameter("filename").map(Parameter::getValue);
-    filename.ifPresent(builder::setFilename);
-
-    Optional<Integer> xResolution = parameters.getParameter("xresolution").flatMap(Parameter::getAsInt);
-    xResolution.ifPresent(builder::setXResolution);
-
-    Optional<Integer> yResolution = parameters.getParameter("yresolution").flatMap(Parameter::getAsInt);
-    yResolution.ifPresent(builder::setYResolution);
-
-    return builder.build();
-  }
 }
