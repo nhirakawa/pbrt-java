@@ -109,12 +109,13 @@ transformation
 
 film : 'Film' '"image"' parameterList ;
 
-camera : 'Camera' '"' cameraType '"' parameterList ;
-cameraType
-  : 'environment' # environment
-  | 'orthographic' # orthographic
-  | 'perspective' # perspective
-  | 'realistic' # realistic
+camera : 'Camera' '"' specificCamera ;
+
+specificCamera
+  : '"' 'environment' '"' parameterList # environmentCamera
+  | '"' 'orthographic' '"' parameterList # orthographicCamera
+  | '"' 'perpsective' '"' parameterList # perspectiveCamera
+  | '"' 'realistic' '"' parameterList # realisticCamera
   ;
 
 sampler : 'Sampler' '"' samplerType '"' parameterList ;

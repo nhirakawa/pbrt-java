@@ -10,7 +10,6 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.slf4j.Logger;
@@ -18,7 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import com.github.nhirakawa.pbrt.java.core.model.ParameterUtils;
 import com.github.nhirakawa.pbrt.java.core.model.Point3;
-import com.github.nhirakawa.pbrt.java.core.model.camera.Camera;
+import com.github.nhirakawa.pbrt.java.core.model.camera.CameraAdt;
+import com.github.nhirakawa.pbrt.java.core.model.camera.CameraAdts;
 import com.github.nhirakawa.pbrt.java.core.model.camera.CameraType;
 import com.github.nhirakawa.pbrt.java.core.model.camera.PerspectiveCamera;
 import com.github.nhirakawa.pbrt.java.core.model.film.ImageFilm;
@@ -34,17 +34,21 @@ import com.github.nhirakawa.pbrt.java.core.model.shape.ShapeType;
 import com.github.nhirakawa.pbrt.java.core.model.shape.Sphere;
 import com.github.nhirakawa.pbrt.java.core.model.shape.TriangleMesh;
 import com.github.nhirakawa.pbrt.java.core.model.transform.LookAt;
-import com.github.nhirakawa.pbrt.java.parse.PbrtParser.CameraContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.EnvironmentCameraContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.FilmContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.IntegratorContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.LookAtContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.NumberArrayLiteralContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.NumberLiteralContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.OrthographicCameraContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ParameterContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ParameterListContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.PerspectiveCameraContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.RealisticCameraContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.SamplerContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ShapeContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ValueContext;
+import com.github.nhirakawa.pbrt.java.parse.factory.CameraFactory;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
@@ -84,21 +88,34 @@ public class PbrtParseListener extends PbrtBaseListener {
   }
 
   @Override
-  public void exitCamera(CameraContext cameraContext) {
-    CameraType cameraType = CameraType.valueOf(cameraContext.cameraType().getText().toUpperCase(Locale.ENGLISH));
-    Parameters parameters = toParameters(cameraContext.parameterList());
+  public void exitPerspectiveCamera(PerspectiveCameraContext ctx) {
+    Parameters parameters = toParameters(ctx.parameterList());
 
-    Camera camera = buildCamera(cameraType, parameters);
+    PerspectiveCamera perspectiveCamera = CameraFactory.toPerspectiveCamera(parameters);
 
-    LOG.info("Camera - {}", camera);
-
-    super.exitCamera(cameraContext);
+    CameraAdt camera = CameraAdts.PERSPECTIVE_CAMERA(perspectiveCamera);
   }
 
-  private Camera buildCamera(CameraType cameraType, Parameters parameters) {
+  @Override
+  public void exitEnvironmentCamera(EnvironmentCameraContext ctx) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void exitRealisticCamera(RealisticCameraContext ctx) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void exitOrthographicCamera(OrthographicCameraContext ctx) {
+    throw new UnsupportedOperationException();
+  }
+
+  private CameraAdt buildCamera(CameraType cameraType, Parameters parameters) {
     switch (cameraType) {
       case PERSPECTIVE:
-        return PerspectiveCamera.from(parameters);
+        PerspectiveCamera perspectiveCamera = PerspectiveCamera.from(parameters);
+        return CameraAdts.PERSPECTIVE_CAMERA(perspectiveCamera);
       default:
         throw new IllegalArgumentException(cameraType + " is not a supported camera type");
     }
@@ -213,10 +230,6 @@ public class PbrtParseListener extends PbrtBaseListener {
     parseTreeWalker.walk(pbrtParseListener, parseTree);
   }
 
-  private static void logToken(Token token) {
-    LOG.debug("{}", token);
-  }
-
   private static Parameters toParameters(ParameterListContext parameterListContext) {
     List<Parameter> parameterList = parameterListContext.parameter().stream()
         .map(PbrtParseListener::toParamater)
@@ -251,4 +264,5 @@ public class PbrtParseListener extends PbrtBaseListener {
 
     return builder.build();
   }
+
 }
