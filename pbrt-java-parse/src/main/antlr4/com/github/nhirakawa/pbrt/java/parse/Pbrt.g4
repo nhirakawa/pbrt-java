@@ -118,81 +118,87 @@ specificCamera
   | '"' 'realistic' '"' parameterList # realisticCamera
   ;
 
-sampler : 'Sampler' '"' samplerType '"' parameterList ;
-samplerType
-  : ('02sequence' | 'lowdiscrepancy') # zeroTwoSequence
-  | 'halton' # halton
-  | 'maxmindist' # maxMinDist
-  | 'random' # random
-  | 'sobol' # sobol
-  | 'stratified' # stratified
+sampler : 'Sampler' specificSampler ;
+
+specificSampler
+  :  '"' ( '02sequence' | 'lowdiscrepancy' ) '"' parameterList # zeroTwoSequenceSampler
+  | '"' 'halton' '"' parameterList # haltonSampler
+  | '"' 'maxmindist' '"' parameterList # maxMinDistSampler
+  | '"' 'random' '"' parameterList # randomSampler
+  | '"' 'sobol' parameterList # sobolSampler
+  | '"' 'stratified' parameterList # stratifiedSampler
   ;
 
-integrator : 'Integrator' integratorType parameterList ;
-integratorType
-  : '"path"' # path
-  | '"bdpt"' # bdpt
-  | '"directlighting"' # directLighting
-  | '"mlt"' # mlt
-  | '"sppm"' # sppm
-  | '"whitted"' # whitted
+integrator : 'Integrator' specificIntegrator ;
+
+specificIntegrator
+  :  '"path"' parameterList # pathIntegrator
+  | '"bdpt"' parameterList # bdptIntegrator
+  | '"directlighting"' parameterList # directLightingIntegrator
+  | '"mlt"' parameterList # mltIntegrator
+  | '"sppm"' parameterList # sppmIntegrator
+  | '"whitted"' parameterList # whittedIntegrator
   ;
 
-lightSource : 'LightSource' lightSourceType parameterList ;
-lightSourceType
-  : '"distant"' # distant
-  | '"goniometric"' # goniometric
-  | '"infinite"' # infinite
-  | '"point"' # point
-  | '"projection"' # projection
-  | '"spot"' # spot
+lightSource : 'LightSource' specificLightSourceType ;
+
+specificLightSourceType
+  :  '"distant"' parameterList # distantLightSource
+  | '"goniometric"' parameterList # goniometricLightSource
+  | '"infinite"' parameterList # infiniteLightSource
+  | '"point"' parameterList # pointLightSource
+  | '"projection"' parameterList # projectionLightSource
+  | '"spot"' parameterList # spotLightSource
   ;
 
-material : 'Material' materialType parameterList ;
-materialType
-  : '"disney"' # disney
-  | '"fourier"' # fourier
-  | '"glass"' # glass
-  | '"hair"' # hair
-  | '"kdsubsurface"' # kdSubSurface
-  | '"matte"' # matte
-  | '"metal"' # metal
-  | '"mirror"' # mirror
-  | '"mix"' # materialMix
-  | '"none"' # none
-  | '"plastic"' # plastic
-  | '"substrate"' # substrate
-  | '"subsurface"' # subsurface
-  | '"translucent"' # translucent
-  | '"uber"' # uber
+material : 'Material' specificMaterial ;
+
+specificMaterial
+  : '"disney"' parameterList # disneyMaterial
+  | '"fourier"' parameterList # fourierMaterial
+  | '"glass"' parameterList # glassMaterial
+  | '"hair"' parameterList # hairMaterial
+  | '"kdsubsurface"' parameterList # kdSubSurfaceMaterial
+  | '"matte"' parameterList # matteMaterial
+  | '"metal"' parameterList # metalMaterial
+  | '"mirror"' parameterList # mirrorMaterial
+  | '"mix"' parameterList # mixMaterial
+  | '"none"' parameterList # noneMaterial
+  | '"plastic"' parameterList # plasticMaterial
+  | '"substrate"' parameterList # substrateMaterial
+  | '"subsurface"' parameterList # subsurfaceMaterial
+  | '"translucent"' parameterList # translucentMaterial
+  | '"uber"' parameterList # uberMaterial
   ;
 
-shape : 'Shape' '"' shapeType '"' parameterList ;
-shapeType
-  : 'cone' # cone
-  | 'curve' # curve
-  | 'cylinder' # cylinder
-  | 'disk' # disk
-  | 'hyperboloid' # hyperboloid
-  | 'paraboloid' # paraboloid
-  | 'sphere' # sphere
-  | 'trianglemesh' # triangleMesh
+shape : 'Shape' specificShape ;
+
+specificShape
+  : '"cone"' parameterList # coneShape
+  | '"curve"' parameterList # curveShape
+  | '"cylinder"' parameterList # cylinderShape
+  | '"disk"' parameterList # diskShape
+  | '"hyperboloid"' parameterList # hyperboloidShape
+  | '"paraboloid"' parameterList # paraboloidShape
+  | '"sphere"' parameterList # sphereShape
+  | '"trianglemesh"' parameterList # triangleMeshShape
   ;
 
-texture : 'Texture' '"' name '"' '"' type '"' textureClass parameterList ;
-textureClass
-  : '"billerp"' # billerp
-  | '"checkerboard"' # checkerboard
-  | '"constant"' # constant
-  | '"dots"' # dots
-  | '"fbm"' # fbm
-  | '"imagemap"' # imagemap
-  | '"marble"' # marble
-  | '"mix"' # textureMix
-  | '"scale"' # textureScale
-  | '"uv"' # uv
-  | '"windy"' # windy
-  | '"wrinkled"' # wrinkled
+texture : 'Texture' '"' name '"' '"' type '"' specificTexture ;
+
+specificTexture
+  : '"billerp"' parameterList # billerpTexture
+  | '"checkerboard"' parameterList # checkerboardTexture
+  | '"constant"' parameterList # constantTexture
+  | '"dots"' parameterList # dotsTexture
+  | '"fbm"' parameterList # fbmTexture
+  | '"imagemap"' parameterList # imageMapTexture
+  | '"marble"' parameterList # marbleTexture
+  | '"mix"' parameterList # mixTexture
+  | '"scale"' parameterList # scaleTexture
+  | '"uv"' parameterList # uvTexture
+  | '"windy"' parameterList # windyTexture
+  | '"wrinkled"' parameterList # wrinkledTexture
   ;
 
 include : 'Include' stringLiteral ;
