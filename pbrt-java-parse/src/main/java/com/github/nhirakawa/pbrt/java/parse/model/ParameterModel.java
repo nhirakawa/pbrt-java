@@ -1,4 +1,4 @@
-package com.github.nhirakawa.pbrt.java.core.model.parse;
+package com.github.nhirakawa.pbrt.java.parse.model;
 
 import java.util.List;
 import java.util.Locale;
@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.immutables.value.Value;
 
 import com.github.nhirakawa.immutable.style.ImmutableStyle;
-import com.github.nhirakawa.pbrt.java.core.model.ParameterUtils;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Streams;
 import com.google.common.primitives.Doubles;
