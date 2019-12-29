@@ -1,254 +1,382 @@
 package com.github.nhirakawa.pbrt.java.parse;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.nhirakawa.pbrt.java.core.model.ParameterUtils;
-import com.github.nhirakawa.pbrt.java.core.model.Point3;
-import com.github.nhirakawa.pbrt.java.core.model.camera.Camera;
-import com.github.nhirakawa.pbrt.java.core.model.camera.CameraType;
+import com.github.nhirakawa.pbrt.java.core.model.PbrtScene;
+import com.github.nhirakawa.pbrt.java.core.model.SceneObjects;
+import com.github.nhirakawa.pbrt.java.core.model.SceneWideRenderingOptions;
+import com.github.nhirakawa.pbrt.java.core.model.camera.CameraAdt;
+import com.github.nhirakawa.pbrt.java.core.model.camera.CameraAdts;
 import com.github.nhirakawa.pbrt.java.core.model.camera.PerspectiveCamera;
 import com.github.nhirakawa.pbrt.java.core.model.film.ImageFilm;
-import com.github.nhirakawa.pbrt.java.core.model.integrator.Integrator;
+import com.github.nhirakawa.pbrt.java.core.model.integrator.IntegratorAdt;
+import com.github.nhirakawa.pbrt.java.core.model.integrator.IntegratorAdts;
 import com.github.nhirakawa.pbrt.java.core.model.integrator.PathIntegrator;
-import com.github.nhirakawa.pbrt.java.core.model.parse.Parameter;
-import com.github.nhirakawa.pbrt.java.core.model.parse.Parameters;
+import com.github.nhirakawa.pbrt.java.core.model.lightsource.DistantLightSource;
+import com.github.nhirakawa.pbrt.java.core.model.lightsource.InfiniteLightSource;
+import com.github.nhirakawa.pbrt.java.core.model.lightsource.LightSourceAdt;
+import com.github.nhirakawa.pbrt.java.core.model.lightsource.LightSourceAdts;
 import com.github.nhirakawa.pbrt.java.core.model.sampler.HaltonSampler;
-import com.github.nhirakawa.pbrt.java.core.model.sampler.Sampler;
-import com.github.nhirakawa.pbrt.java.core.model.sampler.SamplerType;
-import com.github.nhirakawa.pbrt.java.core.model.shape.Shape;
-import com.github.nhirakawa.pbrt.java.core.model.shape.ShapeType;
+import com.github.nhirakawa.pbrt.java.core.model.sampler.SamplerAdt;
+import com.github.nhirakawa.pbrt.java.core.model.sampler.SamplerAdts;
+import com.github.nhirakawa.pbrt.java.core.model.shape.ShapeAdt;
+import com.github.nhirakawa.pbrt.java.core.model.shape.ShapeAdts;
 import com.github.nhirakawa.pbrt.java.core.model.shape.Sphere;
 import com.github.nhirakawa.pbrt.java.core.model.shape.TriangleMesh;
 import com.github.nhirakawa.pbrt.java.core.model.transform.LookAt;
-import com.github.nhirakawa.pbrt.java.parse.PbrtParser.CameraContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.BdptIntegratorContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ConeShapeContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.CurveShapeContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.CylinderShapeContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.DirectLightingIntegratorContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.DiskShapeContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.DistantLightSourceContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.EnvironmentCameraContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.FilmContext;
-import com.github.nhirakawa.pbrt.java.parse.PbrtParser.IntegratorContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.HaltonSamplerContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.HyperboloidShapeContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.InfiniteLightSourceContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.LookAtContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.MaxMinDistSamplerContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.MltIntegratorContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.NumberArrayLiteralContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.NumberLiteralContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.OrthographicCameraContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ParaboloidShapeContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ParameterContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ParameterListContext;
-import com.github.nhirakawa.pbrt.java.parse.PbrtParser.SamplerContext;
-import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ShapeContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.PathIntegratorContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.PerspectiveCameraContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.RandomSamplerContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.RealisticCameraContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.SobolSamplerContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.SphereShapeContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.SppmIntegratorContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.StratifiedSamplerContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.TriangleMeshShapeContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ValueContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.WhittedIntegratorContext;
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ZeroTwoSequenceSamplerContext;
+import com.github.nhirakawa.pbrt.java.parse.factory.CameraFactory;
+import com.github.nhirakawa.pbrt.java.parse.factory.ImageFactory;
+import com.github.nhirakawa.pbrt.java.parse.factory.IntegratorFactory;
+import com.github.nhirakawa.pbrt.java.parse.factory.LightSourceFactory;
+import com.github.nhirakawa.pbrt.java.parse.factory.SamplerFactory;
+import com.github.nhirakawa.pbrt.java.parse.factory.ShapeFactory;
+import com.github.nhirakawa.pbrt.java.parse.model.Parameter;
+import com.github.nhirakawa.pbrt.java.parse.model.ParameterUtils;
+import com.github.nhirakawa.pbrt.java.parse.model.Parameters;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 
 public class PbrtParseListener extends PbrtBaseListener {
 
-  private static final Logger LOG = LoggerFactory.getLogger(PbrtParseListener.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PbrtParseListener.class);
 
-  @Override
-  public void exitLookAt(LookAtContext lookAtContext) {
-    double lookAtEyeX = Double.parseDouble(lookAtContext.lookAtEyeX().getText());
-    double lookAtEyeY = Double.parseDouble(lookAtContext.lookAtEyeY().getText());
-    double lookAtEyeZ = Double.parseDouble(lookAtContext.lookAtEyeZ().getText());
+	private final PbrtScene.Builder sceneBuilder;
 
-    double lookAtPointX = Double.parseDouble(lookAtContext.lookAtPointX().getText());
-    double lookAtPointY = Double.parseDouble(lookAtContext.lookAtPointY().getText());
-    double lookAtPointZ = Double.parseDouble(lookAtContext.lookAtPointZ().getText());
+	public PbrtParseListener() {
+		this.sceneBuilder = PbrtScene.builder();
+	}
 
-    double lookAtUpX = Double.parseDouble(lookAtContext.lookAtUpX().getText());
-    double lookAtUpY = Double.parseDouble(lookAtContext.lookAtUpY().getText());
-    double lookAtUpZ = Double.parseDouble(lookAtContext.lookAtUpZ().getText());
+	public PbrtScene buildScene() {
+		return sceneBuilder.build();
+	}
 
-    LookAt lookAt = LookAt.builder()
-        .setEyeX(lookAtEyeX)
-        .setEyeY(lookAtEyeY)
-        .setEyeZ(lookAtEyeZ)
-        .setPointX(lookAtPointX)
-        .setPointY(lookAtPointY)
-        .setPointZ(lookAtPointZ)
-        .setUpX(lookAtUpX)
-        .setUpY(lookAtUpY)
-        .setUpZ(lookAtUpZ)
-        .build();
-    LOG.debug("LookAt {}", lookAt);
+	// BEGIN SCENE-WIDE RENDERING OPTIONS
 
-    super.exitLookAt(lookAtContext);
-  }
+	@Override
+	public void exitLookAt(LookAtContext lookAtContext) {
+		double lookAtEyeX = Double.parseDouble(lookAtContext.lookAtEyeX().getText());
+		double lookAtEyeY = Double.parseDouble(lookAtContext.lookAtEyeY().getText());
+		double lookAtEyeZ = Double.parseDouble(lookAtContext.lookAtEyeZ().getText());
 
-  @Override
-  public void exitCamera(CameraContext cameraContext) {
-    CameraType cameraType = CameraType.valueOf(cameraContext.cameraType().getText().toUpperCase(Locale.ENGLISH));
-    Parameters parameters = toParameters(cameraContext.parameterList());
+		double lookAtPointX = Double.parseDouble(lookAtContext.lookAtPointX().getText());
+		double lookAtPointY = Double.parseDouble(lookAtContext.lookAtPointY().getText());
+		double lookAtPointZ = Double.parseDouble(lookAtContext.lookAtPointZ().getText());
 
-    Camera camera = buildCamera(cameraType, parameters);
+		double lookAtUpX = Double.parseDouble(lookAtContext.lookAtUpX().getText());
+		double lookAtUpY = Double.parseDouble(lookAtContext.lookAtUpY().getText());
+		double lookAtUpZ = Double.parseDouble(lookAtContext.lookAtUpZ().getText());
 
-    LOG.info("Camera - {}", camera);
+		LookAt lookAt = LookAt.builder()
+				.setEyeX(lookAtEyeX)
+				.setEyeY(lookAtEyeY)
+				.setEyeZ(lookAtEyeZ)
+				.setPointX(lookAtPointX)
+				.setPointY(lookAtPointY)
+				.setPointZ(lookAtPointZ)
+				.setUpX(lookAtUpX)
+				.setUpY(lookAtUpY)
+				.setUpZ(lookAtUpZ)
+				.build();
+		LOG.debug("LookAt {}", lookAt);
 
-    super.exitCamera(cameraContext);
-  }
+		sceneBuilder.addSceneWideRenderingOptions(SceneWideRenderingOptions.LOOK_AT(lookAt));
+	}
 
-  private Camera buildCamera(CameraType cameraType, Parameters parameters) {
-    switch (cameraType) {
-      case PERSPECTIVE:
-        return PerspectiveCamera.from(parameters);
-      default:
-        throw new IllegalArgumentException(cameraType + " is not a supported camera type");
-    }
-  }
+	// BEGIN CAMERAS
 
-  @Override
-  public void exitSampler(SamplerContext samplerContext) {
-    SamplerType samplerType = SamplerType.valueOf(samplerContext.samplerType().getText().toUpperCase(Locale.ENGLISH));
-    Parameters parameters = toParameters(samplerContext.parameterList());
+	@Override
+	public void exitPerspectiveCamera(PerspectiveCameraContext ctx) {
+		Parameters parameters = toParameters(ctx.parameterList());
 
-    Sampler sampler = buildSampler(samplerType, parameters);
+		PerspectiveCamera perspectiveCamera = CameraFactory.toPerspectiveCamera(parameters);
 
-    LOG.info("Sampler - {}", sampler);
+		CameraAdt camera = CameraAdts.PERSPECTIVE_CAMERA(perspectiveCamera);
 
-    super.exitSampler(samplerContext);
-  }
+		sceneBuilder.addSceneWideRenderingOptions(SceneWideRenderingOptions.CAMERA(camera));
+	}
 
-  private Sampler buildSampler(SamplerType samplerType, Parameters parameters) {
-    switch (samplerType) {
-      case HALTON:
-        return HaltonSampler.from(parameters);
-      default:
-        throw new IllegalArgumentException(samplerType + "is not a supported sampler type");
-    }
-  }
+	@Override
+	public void exitEnvironmentCamera(EnvironmentCameraContext ctx) {
+		throw new UnsupportedOperationException();
+	}
 
-  @Override
-  public void exitIntegrator(IntegratorContext integratorContext) {
-    Parameters parameters = toParameters(integratorContext.parameterList());
+	@Override
+	public void exitRealisticCamera(RealisticCameraContext ctx) {
+		throw new UnsupportedOperationException();
+	}
 
-    Integrator integrator = PathIntegrator.from(parameters);
+	@Override
+	public void exitOrthographicCamera(OrthographicCameraContext ctx) {
+		throw new UnsupportedOperationException();
+	}
 
-    LOG.info("Integrator - {}", integrator);
+	// END CAMERAS
 
-    super.exitIntegrator(integratorContext);
-  }
+	// BEGIN SAMPLERS
 
-  public void exitFilm(FilmContext ctx) {
-    Parameters parameters = toParameters(ctx.parameterList());
+	@Override
+	public void exitHaltonSampler(HaltonSamplerContext ctx) {
+		Parameters parameters = toParameters(ctx.parameterList());
+		HaltonSampler haltonSampler = SamplerFactory.toHaltonSampler(parameters);
 
-    ImageFilm imageFilm = ImageFilm.from(parameters);
+		SamplerAdt samplerAdt = SamplerAdts.HALTON_SAMPLER(haltonSampler);
 
-    LOG.info("ImageFilm - {}", imageFilm);
+		sceneBuilder.addSceneWideRenderingOptions(SceneWideRenderingOptions.SAMPLER(samplerAdt));
+	}
 
-    super.exitFilm(ctx);
-  }
+	@Override
+	public void exitZeroTwoSequenceSampler(ZeroTwoSequenceSamplerContext ctx) {
+		throw new UnsupportedOperationException();
+	}
 
-  @Override
-  public void enterShape(ShapeContext shapeContext) {
-    ShapeType shapeType = ShapeType.valueOf(shapeContext.shapeType().getText().toUpperCase());
+	@Override
+	public void exitMaxMinDistSampler(MaxMinDistSamplerContext ctx) {
+		throw new UnsupportedOperationException();
+	}
 
-    Shape shape = buildShape(shapeType, shapeContext.parameterList());
+	@Override
+	public void exitRandomSampler(RandomSamplerContext ctx) {
+		throw new UnsupportedOperationException();
+	}
 
-    LOG.info("Shape - {}", shape);
+	@Override
+	public void exitSobolSampler(SobolSamplerContext ctx) {
+		throw new UnsupportedOperationException();
+	}
 
-    super.enterShape(shapeContext);
-  }
+	@Override
+	public void exitStratifiedSampler(StratifiedSamplerContext ctx) {
+		throw new UnsupportedOperationException();
+	}
 
-  private Shape buildShape(ShapeType shapeType, ParameterListContext parameterListContext) {
-    Parameters parameters = toParameters(parameterListContext);
-    switch (shapeType) {
-      case SPHERE:
-        return buildSphere(parameters);
-      case TRIANGLEMESH:
-        return buildTriangleMesh(parameters);
-      default:
-        throw new IllegalArgumentException(shapeType + " is not a valid shape type");
-    }
-  }
+	// END SAMPLERS
 
-  private Sphere buildSphere(Parameters parameters) {
-    Optional<Double> radius = parameters.getParameter("radius").flatMap(Parameter::getAsDouble);
+	// BEGIN INTEGRATORS
 
-    Sphere.Builder builder = Sphere.builder();
-    radius.ifPresent(builder::setRadius);
+	@Override
+	public void exitPathIntegrator(PathIntegratorContext ctx) {
+		Parameters parameters = toParameters(ctx.parameterList());
 
-    return builder.build();
-  }
+		PathIntegrator pathIntegrator = IntegratorFactory.toPathIntegrator(parameters);
 
-  private TriangleMesh buildTriangleMesh(Parameters parameters) {
-    TriangleMesh.Builder builder = TriangleMesh.builder();
+		IntegratorAdt integratorAdt = IntegratorAdts.PATH(pathIntegrator);
 
-    Optional<List<Integer>> indices = parameters.getParameter("indices").map(Parameter::getAsListOfIntegers);
-    indices.ifPresent(builder::addAllIndices);
+		sceneBuilder.addSceneWideRenderingOptions(SceneWideRenderingOptions.INTEGRATOR(integratorAdt));
+	}
 
-    List<Integer> rawCoordinates = parameters.getParameter("P").map(Parameter::getAsListOfIntegers).orElse(Collections.emptyList());
-    List<List<Integer>> partitionedCoordinates = Lists.partition(rawCoordinates, 3);
-    List<Point3> points = partitionedCoordinates.stream()
-        .map(Point3::fromInts)
-        .collect(ImmutableList.toImmutableList());
+	@Override
+	public void exitBdptIntegrator(BdptIntegratorContext ctx) {
+		throw new UnsupportedOperationException();
+	}
 
-    return TriangleMesh.builder()
-        .setIndices(indices.get())
-        .setPoints(points)
-        .build();
-  }
+	@Override
+	public void exitDirectLightingIntegrator(DirectLightingIntegratorContext ctx) {
+		throw new UnsupportedOperationException();
+	}
 
-  @Override
-  public void exitEveryRule(ParserRuleContext parserRuleContext) {
-    super.exitEveryRule(parserRuleContext);
-  }
+	@Override
+	public void exitMltIntegrator(MltIntegratorContext ctx) {
+		throw new UnsupportedOperationException();
+	}
 
-  public static void main(String... args) throws IOException {
-    CharStream charStream = CharStreams.fromStream(Resources.getResource("ball.pbrt").openStream());
-    PbrtLexer lexer = new PbrtLexer(charStream);
-    CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
-    commonTokenStream.fill();
-    PbrtParser pbrtParser = new PbrtParser(commonTokenStream);
-    ParseTree parseTree = pbrtParser.pbrt();
-    ParseTreeWalker parseTreeWalker = new ParseTreeWalker();
-    PbrtParseListener pbrtParseListener = new PbrtParseListener();
-    parseTreeWalker.walk(pbrtParseListener, parseTree);
-  }
+	@Override
+	public void exitSppmIntegrator(SppmIntegratorContext ctx) {
+		throw new UnsupportedOperationException();
+	}
 
-  private static void logToken(Token token) {
-    LOG.debug("{}", token);
-  }
+	@Override
+	public void exitWhittedIntegrator(WhittedIntegratorContext ctx) {
+		throw new UnsupportedOperationException();
+	}
 
-  private static Parameters toParameters(ParameterListContext parameterListContext) {
-    List<Parameter> parameterList = parameterListContext.parameter().stream()
-        .map(PbrtParseListener::toParamater)
-        .collect(ImmutableList.toImmutableList());
+	// END INTEGRATORS
 
-    return Parameters.builder()
-        .setParameters(parameterList)
-        .build();
-  }
+	// END SCENE-WIDE RENDERING OPTIONS
 
-  private static Parameter toParamater(ParameterContext parameterContext) {
-    Parameter.Builder builder = Parameter.builder()
-        .setName(parameterContext.name().getText())
-        .setType(parameterContext.type().getText());
+	@Override
+	public void exitFilm(FilmContext ctx) {
+		Parameters parameters = toParameters(ctx.parameterList());
 
-    ValueContext valueContext = parameterContext.value();
-    if (valueContext.numberArrayLiteral() != null) {
-      NumberArrayLiteralContext numberArrayLiteralContext = valueContext.numberArrayLiteral();
-      if (numberArrayLiteralContext.singleValueArray() != null) {
-        builder.setValue(numberArrayLiteralContext.singleValueArray().numberLiteral().getText());
-      } else if (numberArrayLiteralContext.numberLiteral() != null) {
-        builder.setValue(numberArrayLiteralContext.numberLiteral().getText());
-      } else if (numberArrayLiteralContext.multipleValueArray() != null) {
-        String joinedValue = numberArrayLiteralContext.multipleValueArray().numberLiteral().stream()
-            .map(NumberLiteralContext::getText)
-            .collect(ParameterUtils.collector());
-        builder.setValue(joinedValue);
-      }
-    } else {
-      builder.setValue(parameterContext.getText());
-    }
+		ImageFilm imageFilm = ImageFactory.toImage(parameters);
 
-    return builder.build();
-  }
+		sceneBuilder.addSceneWideRenderingOptions(SceneWideRenderingOptions.FILM(imageFilm));
+	}
+
+// BEGIN SHAPES
+
+	@Override
+	public void exitConeShape(ConeShapeContext ctx) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void exitCurveShape(CurveShapeContext ctx) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void exitCylinderShape(CylinderShapeContext ctx) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void exitDiskShape(DiskShapeContext ctx) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void exitHyperboloidShape(HyperboloidShapeContext ctx) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void exitParaboloidShape(ParaboloidShapeContext ctx) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void exitSphereShape(SphereShapeContext ctx) {
+		Parameters parameters = toParameters(ctx.parameterList());
+
+		Sphere sphere = ShapeFactory.toSphere(parameters);
+
+		ShapeAdt shapeAdt = ShapeAdts.SPHERE(sphere);
+
+		sceneBuilder.addSceneObjects(SceneObjects.SHAPE(shapeAdt));
+	}
+
+	@Override
+	public void exitTriangleMeshShape(TriangleMeshShapeContext ctx) {
+		Parameters parameters = toParameters(ctx.parameterList());
+
+		TriangleMesh triangleMesh = ShapeFactory.toTriangleMesh(parameters);
+
+		ShapeAdt shapeAdt = ShapeAdts.TRIANGLE_MESH(triangleMesh);
+
+		sceneBuilder.addSceneObjects(SceneObjects.SHAPE(shapeAdt));
+	}
+
+// END SHAPES
+
+// LIGHT SOURCES
+
+	@Override
+	public void exitInfiniteLightSource(InfiniteLightSourceContext ctx) {
+		Parameters parameters = toParameters(ctx.parameterList());
+
+		InfiniteLightSource infiniteLightSource = LightSourceFactory.toInfiniteLightSource(parameters);
+
+		LightSourceAdt lightSourceAdt = LightSourceAdts.INFINITE(infiniteLightSource);
+
+		sceneBuilder.addSceneObjects(SceneObjects.LIGHT_SOURCE(lightSourceAdt));
+	}
+
+	@Override
+	public void exitDistantLightSource(DistantLightSourceContext ctx) {
+		Parameters parameters = toParameters(ctx.parameterList());
+
+		DistantLightSource distantLightSource = LightSourceFactory.toDistantLightSource(parameters);
+
+		LightSourceAdt lightSourceAdt = LightSourceAdts.DISTANT(distantLightSource);
+
+		sceneBuilder.addSceneObjects(SceneObjects.LIGHT_SOURCE(lightSourceAdt));
+	}
+
+// END LIGHT SOURCES
+
+	@Override
+	public void exitEveryRule(ParserRuleContext parserRuleContext) {
+		super.exitEveryRule(parserRuleContext);
+	}
+
+	private static Parameters toParameters(ParameterListContext parameterListContext) {
+		List<Parameter> parameterList = parameterListContext.parameter().stream()
+				.map(PbrtParseListener::toParamater)
+				.collect(ImmutableList.toImmutableList());
+
+		return Parameters.builder()
+				.setParameters(parameterList)
+				.build();
+	}
+
+	private static Parameter toParamater(ParameterContext parameterContext) {
+		Parameter.Builder builder = Parameter.builder()
+				.setName(parameterContext.name().getText())
+				.setType(parameterContext.type().getText());
+
+		ValueContext valueContext = parameterContext.value();
+		if (valueContext.numberArrayLiteral() != null) {
+			NumberArrayLiteralContext numberArrayLiteralContext = valueContext.numberArrayLiteral();
+			if (numberArrayLiteralContext.singleValueArray() != null) {
+				builder.setValue(numberArrayLiteralContext.singleValueArray().numberLiteral().getText());
+			} else if (numberArrayLiteralContext.numberLiteral() != null) {
+				builder.setValue(numberArrayLiteralContext.numberLiteral().getText());
+			} else if (numberArrayLiteralContext.multipleValueArray() != null) {
+				String joinedValue = numberArrayLiteralContext.multipleValueArray().numberLiteral().stream()
+						.map(NumberLiteralContext::getText)
+						.collect(ParameterUtils.collector());
+				builder.setValue(joinedValue);
+			}
+		} else {
+			builder.setValue(parameterContext.getText());
+		}
+
+		return builder.build();
+	}
+
+	public static void main(String... args) throws IOException {
+		CharStream charStream = CharStreams.fromStream(Resources.getResource("ball.pbrt").openStream());
+		PbrtLexer lexer = new PbrtLexer(charStream);
+		CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
+		commonTokenStream.fill();
+		PbrtParser pbrtParser = new PbrtParser(commonTokenStream);
+		ParseTree parseTree = pbrtParser.pbrt();
+		ParseTreeWalker parseTreeWalker = new ParseTreeWalker();
+		PbrtParseListener pbrtParseListener = new PbrtParseListener();
+		parseTreeWalker.walk(pbrtParseListener, parseTree);
+	}
+
 }

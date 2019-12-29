@@ -1,5 +1,7 @@
 package com.github.nhirakawa.pbrt.java.core.model;
 
+import java.util.List;
+
 import org.immutables.value.Value;
 
 import com.github.nhirakawa.immutable.style.ImmutableStyle;
@@ -8,7 +10,7 @@ import com.github.nhirakawa.immutable.style.ImmutableStyle;
 @ImmutableStyle
 public abstract class AbstractPbrtScene {
 
-  public abstract SceneWideRenderingOption getSceneWideRenderingOptions();
-  public abstract World getWorld();
+  public abstract List<SceneWideRenderingOption> getSceneWideRenderingOptions();
+  public abstract List<SceneObject> getSceneObjects();
 
 }

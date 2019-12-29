@@ -6,7 +6,6 @@ import java.util.List;
 import org.immutables.value.Value;
 
 import com.github.nhirakawa.immutable.style.ImmutableStyle;
-import com.github.nhirakawa.pbrt.java.core.model.parse.Parameters;
 import com.google.common.base.Preconditions;
 
 @Value.Immutable
@@ -51,10 +50,6 @@ public abstract class AbstractPathIntegrator implements Integrator {
         getPixelBounds().isEmpty() || getPixelBounds().size() == 4,
         "pixel bounds must either have size 0 or size 4"
     );
-  }
-
-  public static PathIntegrator from(Parameters parameters) {
-    return PathIntegrator.builder().build();
   }
 
 }
