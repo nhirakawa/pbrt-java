@@ -14,7 +14,9 @@ public final class LightSourceFactory {
     throw new UnsupportedOperationException();
   }
 
-  public static InfiniteLightSource toInfiniteLightSource(Parameters parameters) {
+  public static InfiniteLightSource toInfiniteLightSource(
+    Parameters parameters
+  ) {
     throw new UnsupportedOperationException();
   }
 }

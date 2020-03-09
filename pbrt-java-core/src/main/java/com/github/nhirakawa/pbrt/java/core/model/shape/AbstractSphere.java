@@ -1,19 +1,21 @@
 package com.github.nhirakawa.pbrt.java.core.model.shape;
 
-import org.immutables.value.Value;
-
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.nhirakawa.immutable.style.ImmutableStyle;
+import org.immutables.value.Value;
 
 @Value.Immutable
 @ImmutableStyle
-@JsonTypeInfo(use = Id.NAME, include = As.EXISTING_PROPERTY, property = "shapeType")
+@JsonTypeInfo(
+  use = Id.NAME,
+  include = As.EXISTING_PROPERTY,
+  property = "shapeType"
+)
 @JsonSerialize
 public interface AbstractSphere extends Shape {
-
   @Value.Default
   default double getRadius() {
     return 1;

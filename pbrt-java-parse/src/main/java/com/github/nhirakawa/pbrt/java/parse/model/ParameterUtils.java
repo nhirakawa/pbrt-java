@@ -1,25 +1,27 @@
 package com.github.nhirakawa.pbrt.java.parse.model;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-
 public final class ParameterUtils {
-
-  private static final Splitter RAW_INPUT_SPLITTER = Splitter.on("[ ]")
-      .omitEmptyStrings()
-      .trimResults();
+  private static final Splitter RAW_INPUT_SPLITTER = Splitter
+    .on("[ ]")
+    .omitEmptyStrings()
+    .trimResults();
 
   private static final String SEPARATOR = ";";
 
-  private static final Splitter VALUE_SPLITTER = Splitter.on(SEPARATOR)
-      .trimResults();
+  private static final Splitter VALUE_SPLITTER = Splitter
+    .on(SEPARATOR)
+    .trimResults();
 
   private static final Joiner VALUE_JOINER = Joiner.on(SEPARATOR);
 
-  private static final Collector<CharSequence, ?, String> COLLECTOR = Collectors.joining(SEPARATOR);
+  private static final Collector<CharSequence, ?, String> COLLECTOR = Collectors.joining(
+    SEPARATOR
+  );
 
   private ParameterUtils() {}
 

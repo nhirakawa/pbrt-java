@@ -1,10 +1,8 @@
 package com.github.nhirakawa.pbrt.java.core.model.camera;
 
-import java.util.Optional;
-
-import org.immutables.value.Value;
-
 import com.github.nhirakawa.immutable.style.ImmutableStyle;
+import java.util.Optional;
+import org.immutables.value.Value;
 
 @Value.Immutable
 @ImmutableStyle
@@ -17,6 +15,7 @@ public abstract class AbstractPerspectiveCamera implements Camera {
   }
 
   public abstract Optional<Double> getFrameAspectRatio();
+
   public abstract Optional<Double> getScreenWindow();
 
   @Value.Default

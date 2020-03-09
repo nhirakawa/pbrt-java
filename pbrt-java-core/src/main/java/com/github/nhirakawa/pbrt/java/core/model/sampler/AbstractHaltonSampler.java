@@ -1,8 +1,7 @@
 package com.github.nhirakawa.pbrt.java.core.model.sampler;
 
-import org.immutables.value.Value;
-
 import com.github.nhirakawa.immutable.style.ImmutableStyle;
+import org.immutables.value.Value;
 
 @Value.Immutable
 @ImmutableStyle
@@ -17,5 +16,4 @@ public abstract class AbstractHaltonSampler implements Sampler {
   public int getNumberOfSamplesPerPixel() {
     return 16;
   }
-
 }

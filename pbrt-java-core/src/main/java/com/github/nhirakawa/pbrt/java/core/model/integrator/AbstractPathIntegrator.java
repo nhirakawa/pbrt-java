@@ -1,21 +1,17 @@
 package com.github.nhirakawa.pbrt.java.core.model.integrator;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.immutables.value.Value;
-
 import com.github.nhirakawa.immutable.style.ImmutableStyle;
 import com.google.common.base.Preconditions;
+import java.util.Collections;
+import java.util.List;
+import org.immutables.value.Value;
 
 @Value.Immutable
 @ImmutableStyle
 public abstract class AbstractPathIntegrator implements Integrator {
 
   enum LightSampleStrategy {
-    UNIFORM,
-    POWER,
-    SPATIAL
+    UNIFORM, POWER, SPATIAL
   }
 
   @Override
@@ -47,9 +43,8 @@ public abstract class AbstractPathIntegrator implements Integrator {
   @Value.Check
   public void check() {
     Preconditions.checkState(
-        getPixelBounds().isEmpty() || getPixelBounds().size() == 4,
-        "pixel bounds must either have size 0 or size 4"
+      getPixelBounds().isEmpty() || getPixelBounds().size() == 4,
+      "pixel bounds must either have size 0 or size 4"
     );
   }
-
 }
