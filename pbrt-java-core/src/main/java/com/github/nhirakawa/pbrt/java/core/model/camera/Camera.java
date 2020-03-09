@@ -3,7 +3,6 @@ package com.github.nhirakawa.pbrt.java.core.model.camera;
 import org.immutables.value.Value;
 
 public interface Camera {
-
   CameraType getCameraType();
 
   @Value.Default
@@ -15,5 +14,4 @@ public interface Camera {
   default double getShutterClose() {
     return 1;
   }
-
 }

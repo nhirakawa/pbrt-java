@@ -8,5 +8,4 @@ public final class IntegratorFactory {
   public static PathIntegrator toPathIntegrator(Parameters parameters) {
     return PathIntegrator.builder().build();
   }
-
 }

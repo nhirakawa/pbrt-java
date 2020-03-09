@@ -1,10 +1,8 @@
 package com.github.nhirakawa.pbrt.java.core.model.film;
 
-import java.util.List;
-
-import org.immutables.value.Value;
-
 import com.github.nhirakawa.immutable.style.ImmutableStyle;
+import java.util.List;
+import org.immutables.value.Value;
 
 @Value.Immutable
 @ImmutableStyle
@@ -47,5 +45,4 @@ public abstract class AbstractImageFilm implements Film {
   public double getDiagonal() {
     return 35;
   }
-
 }

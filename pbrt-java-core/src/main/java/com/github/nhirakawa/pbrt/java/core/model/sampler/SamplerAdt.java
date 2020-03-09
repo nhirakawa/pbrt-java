@@ -6,11 +6,8 @@ import org.derive4j.Data;
 public abstract class SamplerAdt {
 
   interface Cases<R> {
-
     R HALTON_SAMPLER(AbstractHaltonSampler haltonSampler);
-
   }
 
   public abstract <R> R match(Cases<R> cases);
-
 }

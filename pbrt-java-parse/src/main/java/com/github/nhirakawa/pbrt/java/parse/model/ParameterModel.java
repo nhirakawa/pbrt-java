@@ -1,24 +1,24 @@
 package com.github.nhirakawa.pbrt.java.parse.model;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-
-import org.immutables.value.Value;
-
 import com.github.nhirakawa.immutable.style.ImmutableStyle;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Streams;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import org.immutables.value.Value;
 
 @Value.Immutable
 @ImmutableStyle
 public abstract class ParameterModel {
 
   public abstract String getName();
+
   public abstract String getType();
+
   public abstract String getValue();
 
   @Value.Lazy
@@ -59,9 +59,9 @@ public abstract class ParameterModel {
 
   @Value.Lazy
   public List<Integer> getAsListOfIntegers() {
-    return Streams.stream(ParameterUtils.split(getValue()))
-        .map(Integer::valueOf)
-        .collect(ImmutableList.toImmutableList());
+    return Streams
+      .stream(ParameterUtils.split(getValue()))
+      .map(Integer::valueOf)
+      .collect(ImmutableList.toImmutableList());
   }
-
 }

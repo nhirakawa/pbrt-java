@@ -1,14 +1,12 @@
 package com.github.nhirakawa.pbrt.java.core.model.shape;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.immutables.value.Value;
-
 import com.github.nhirakawa.immutable.style.ImmutableStyle;
 import com.github.nhirakawa.pbrt.java.core.model.Point3;
 import com.github.nhirakawa.pbrt.java.core.model.texture.Texture;
 import com.google.common.base.Preconditions;
+import java.util.List;
+import java.util.Optional;
+import org.immutables.value.Value;
 
 @Value.Immutable
 @ImmutableStyle
@@ -36,26 +34,26 @@ public abstract class AbstractTriangleMesh implements Shape {
 
   @Value.Check
   public void check() {
-    Preconditions.checkState(!
-            getIndices().isEmpty(),
-        "Must provide at least one index"
+    Preconditions.checkState(
+      !getIndices().isEmpty(),
+      "Must provide at least one index"
     );
 
     Preconditions.checkState(
-        getIndices().size() % 3 == 0,
-        "Nunber of indicies must be a multiple of 3"
+      getIndices().size() % 3 == 0,
+      "Nunber of indicies must be a multiple of 3"
     );
 
     Preconditions.checkState(
-        !getPoints().isEmpty(),
-        "Must provide at least one point"
+      !getPoints().isEmpty(),
+      "Must provide at least one point"
     );
 
     int maxIndex = getIndices().stream().max(Integer::compareTo).get();
     Preconditions.checkState(
-        getPoints().size() > maxIndex,
-        "Index %s is out of bounds", maxIndex
+      getPoints().size() > maxIndex,
+      "Index %s is out of bounds",
+      maxIndex
     );
-
   }
 }
