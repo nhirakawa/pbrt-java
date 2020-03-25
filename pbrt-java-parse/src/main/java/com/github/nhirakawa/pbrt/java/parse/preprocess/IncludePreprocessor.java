@@ -1,10 +1,12 @@
-package com.github.nhirakawa.pbrt.java.parse;
+package com.github.nhirakawa.pbrt.java.parse.preprocess;
 
 import com.google.common.base.Joiner;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -27,14 +29,18 @@ public class IncludePreprocessor {
 
   private static final Joiner JOINER = Joiner.on("\n");
 
-  public IncludePreprocessor() {}
+  private final FileLoader fileLoader;
 
-  public String preprocess(InputStream inputStream) throws IOException {
+  public IncludePreprocessor(FileLoader fileLoader) {
+    this.fileLoader = fileLoader;
+  }
+
+  public String preprocess(URL url) throws IOException {
     List<String> processedLines = new ArrayList<>();
 
     try (
       BufferedReader bufferedReader = new BufferedReader(
-        new InputStreamReader(inputStream, StandardCharsets.UTF_8)
+        new InputStreamReader(url.openStream(), StandardCharsets.UTF_8)
       )
     ) {
       while (bufferedReader.ready()) {
@@ -55,26 +61,6 @@ public class IncludePreprocessor {
     }
 
     String filename = matcher.group("filename");
-    try (
-      InputStream inputStream = Files.newInputStream(
-        Paths.get(filename),
-        StandardOpenOption.READ
-      )
-    ) {
-      return preprocess(inputStream);
-    }
-  }
-
-  public static void main(String... args) throws IOException {
-    try (
-      InputStream inputStream = Files.newInputStream(
-        Paths.get("nested.pbrt"),
-        StandardOpenOption.READ
-      )
-    ) {
-      String replaced = new IncludePreprocessor().preprocess(inputStream);
-
-      LOG.info("Transformed into\n{}", replaced);
-    }
+    return preprocess(fileLoader.locate(filename));
   }
 }
