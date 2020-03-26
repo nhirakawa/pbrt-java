@@ -326,4 +326,4 @@ $RECYCLE.BIN/
 
 # End of https://www.gitignore.io/api/vim,java,linux,emacs,macos,maven,windows,eclipse,netbeans,intellij+all,visualstudiocode
 
-./*.pbrt
+/*.pbrt
