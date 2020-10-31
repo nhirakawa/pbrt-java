@@ -2,16 +2,13 @@ package com.github.nhirakawa.pbrt.java.parse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.github.nhirakawa.pbrt.java.parse.PbrtParser.NumberLiteralContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
+
 import org.junit.Test;
+
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.NumberLiteralContext;
 
 public class PbrtParserNumberTest {
 
@@ -61,15 +58,8 @@ public class PbrtParserNumberTest {
   }
 
   private void doParse(String input, Consumer<Double> consumer) {
-    CharStream charStream = CharStreams.fromString(input);
-    PbrtLexer lexer = new PbrtLexer(charStream);
-    CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
-    commonTokenStream.fill();
-    PbrtParser pbrtParser = new PbrtParser(commonTokenStream);
-    ParseTree parseTree = pbrtParser.numberLiteral();
-    ParseTreeWalker parseTreeWalker = new ParseTreeWalker();
-    PbrtBaseListener pbrtParseListener = new PbrtNumberParser(consumer);
-    parseTreeWalker.walk(pbrtParseListener, parseTree);
+    PbrtNumberParser parser = new PbrtNumberParser(consumer);
+    TestUtil.doParse(input, () -> parser);
   }
 
   private static class PbrtNumberParser extends PbrtBaseListener {
