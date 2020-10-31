@@ -11,10 +11,10 @@ public interface Vector2<T extends Number> {
 
   @Value.Check
   default void check() {
-    if(getX() instanceof Double) {
+    if (getX() instanceof Double) {
       Preconditions.checkArgument(!NaNChecker.isNaN((double) getX()));
       Preconditions.checkArgument(!NaNChecker.isNaN((double) getY()));
-    } else if(getX() instanceof Float) {
+    } else if (getX() instanceof Float) {
       Preconditions.checkArgument(!NaNChecker.isNaN((float) getX()));
       Preconditions.checkArgument(!NaNChecker.isNaN((float) getY()));
     }
