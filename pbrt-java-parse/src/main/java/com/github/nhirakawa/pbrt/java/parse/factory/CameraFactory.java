@@ -10,9 +10,7 @@ public final class CameraFactory {
   public static PerspectiveCamera toPerspectiveCamera(Parameters parameters) {
     PerspectiveCamera.Builder builder = PerspectiveCamera.builder();
 
-    Optional<Double> fov = parameters
-      .getParameter("fov")
-      .flatMap(Parameter::getAsDouble);
+    Optional<Double> fov = parameters.getParameter("fov").flatMap(Parameter::getAsDouble);
     fov.ifPresent(builder::setFov);
 
     return builder.build();

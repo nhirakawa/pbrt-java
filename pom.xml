@@ -32,6 +32,8 @@
     <logback.version>1.2.3</logback.version>
     <maven.compiler.version>3.8.0</maven.compiler.version>
     <maven.dependency.plugin.version>3.1.2</maven.dependency.plugin.version>
+    <plugin.prettier.goal>write</plugin.prettier.goal>
+    <prettier-maven-plugin.version>0.10</prettier-maven-plugin.version>
     <prettier.skip>false</prettier.skip>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <slf4j.version>1.7.25</slf4j.version>
@@ -127,7 +129,42 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>com.hubspot.maven.plugins</groupId>
+        <artifactId>prettier-maven-plugin</artifactId>
+        <version>${prettier-maven-plugin.version}</version>
+        <configuration>
+          <printWidth>90</printWidth>
+          <tabWidth>2</tabWidth>
+          <useTabs>false</useTabs>
+          <ignoreConfigFile>true</ignoreConfigFile>
+          <ignoreEditorConfig>true</ignoreEditorConfig>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>${plugin.prettier.goal}</goal>
+            </goals>
+            <phase>validate</phase>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>travis</id>
+      <activation>
+        <property>
+          <name>env.TRAVIS</name>
+        </property>
+      </activation>
+      <properties>
+        <!-- But in our CI environment we want to validate that code is formatted -->
+        <plugin.prettier.goal>check</plugin.prettier.goal>
+      </properties>
+    </profile>
+  </profiles>
 
 </project>

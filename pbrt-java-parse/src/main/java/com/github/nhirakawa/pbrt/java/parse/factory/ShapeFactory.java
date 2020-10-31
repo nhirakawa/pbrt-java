@@ -36,19 +36,12 @@ public final class ShapeFactory {
       .getParameter("P")
       .map(Parameter::getAsListOfIntegers)
       .orElse(Collections.emptyList());
-    List<List<Integer>> partitionedCoordinates = Lists.partition(
-      rawCoordinates,
-      3
-    );
+    List<List<Integer>> partitionedCoordinates = Lists.partition(rawCoordinates, 3);
     List<Point3> points = partitionedCoordinates
       .stream()
       .map(Point3::fromInts)
       .collect(ImmutableList.toImmutableList());
 
-    return TriangleMesh
-      .builder()
-      .setIndices(indices.get())
-      .setPoints(points)
-      .build();
+    return TriangleMesh.builder().setIndices(indices.get()).setPoints(points).build();
   }
 }

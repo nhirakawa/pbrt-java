@@ -34,20 +34,14 @@ public abstract class AbstractTriangleMesh implements Shape {
 
   @Value.Check
   public void check() {
-    Preconditions.checkState(
-      !getIndices().isEmpty(),
-      "Must provide at least one index"
-    );
+    Preconditions.checkState(!getIndices().isEmpty(), "Must provide at least one index");
 
     Preconditions.checkState(
       getIndices().size() % 3 == 0,
       "Nunber of indicies must be a multiple of 3"
     );
 
-    Preconditions.checkState(
-      !getPoints().isEmpty(),
-      "Must provide at least one point"
-    );
+    Preconditions.checkState(!getPoints().isEmpty(), "Must provide at least one point");
 
     int maxIndex = getIndices().stream().max(Integer::compareTo).get();
     Preconditions.checkState(

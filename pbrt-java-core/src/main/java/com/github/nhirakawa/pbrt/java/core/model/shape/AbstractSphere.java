@@ -9,11 +9,7 @@ import org.immutables.value.Value;
 
 @Value.Immutable
 @ImmutableStyle
-@JsonTypeInfo(
-  use = Id.NAME,
-  include = As.EXISTING_PROPERTY,
-  property = "shapeType"
-)
+@JsonTypeInfo(use = Id.NAME, include = As.EXISTING_PROPERTY, property = "shapeType")
 @JsonSerialize
 public interface AbstractSphere extends Shape {
   @Value.Default

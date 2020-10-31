@@ -13,8 +13,7 @@ public class IncludePreprocessorTest {
 
   @Before
   public void setup() {
-    this.includePreprocessor =
-      new IncludePreprocessor(new ResourcesFileLoader());
+    this.includePreprocessor = new IncludePreprocessor(new ResourcesFileLoader());
   }
 
   @Test
@@ -24,10 +23,7 @@ public class IncludePreprocessorTest {
     );
 
     String raw = Resources
-      .toString(
-        Resources.getResource("no-include.pbrt"),
-        StandardCharsets.UTF_8
-      )
+      .toString(Resources.getResource("no-include.pbrt"), StandardCharsets.UTF_8)
       .trim();
 
     assertThat(processed).isEqualTo(raw);

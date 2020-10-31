@@ -11,7 +11,9 @@ import org.immutables.value.Value;
 public abstract class AbstractPathIntegrator implements Integrator {
 
   enum LightSampleStrategy {
-    UNIFORM, POWER, SPATIAL
+    UNIFORM,
+    POWER,
+    SPATIAL
   }
 
   @Override

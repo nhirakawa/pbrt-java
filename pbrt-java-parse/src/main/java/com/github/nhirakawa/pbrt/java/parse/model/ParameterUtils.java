@@ -13,9 +13,7 @@ public final class ParameterUtils {
 
   private static final String SEPARATOR = ";";
 
-  private static final Splitter VALUE_SPLITTER = Splitter
-    .on(SEPARATOR)
-    .trimResults();
+  private static final Splitter VALUE_SPLITTER = Splitter.on(SEPARATOR).trimResults();
 
   private static final Joiner VALUE_JOINER = Joiner.on(SEPARATOR);
 

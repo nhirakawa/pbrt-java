@@ -1,5 +1,8 @@
 package com.github.nhirakawa.pbrt.java.parse;
 
+import com.github.nhirakawa.pbrt.java.core.model.PbrtScene;
+import com.github.nhirakawa.pbrt.java.core.model.SceneObjects;
+import com.github.nhirakawa.pbrt.java.core.model.SceneWideRenderingOptions;
 import com.github.nhirakawa.pbrt.java.core.model.camera.CameraAdt;
 import com.github.nhirakawa.pbrt.java.core.model.camera.CameraAdts;
 import com.github.nhirakawa.pbrt.java.core.model.camera.PerspectiveCamera;
@@ -11,26 +14,14 @@ import com.github.nhirakawa.pbrt.java.core.model.lightsource.DistantLightSource;
 import com.github.nhirakawa.pbrt.java.core.model.lightsource.InfiniteLightSource;
 import com.github.nhirakawa.pbrt.java.core.model.lightsource.LightSourceAdt;
 import com.github.nhirakawa.pbrt.java.core.model.lightsource.LightSourceAdts;
-import com.github.nhirakawa.pbrt.java.core.model.PbrtScene;
 import com.github.nhirakawa.pbrt.java.core.model.sampler.HaltonSampler;
 import com.github.nhirakawa.pbrt.java.core.model.sampler.SamplerAdt;
 import com.github.nhirakawa.pbrt.java.core.model.sampler.SamplerAdts;
-import com.github.nhirakawa.pbrt.java.core.model.SceneObjects;
-import com.github.nhirakawa.pbrt.java.core.model.SceneWideRenderingOptions;
 import com.github.nhirakawa.pbrt.java.core.model.shape.ShapeAdt;
 import com.github.nhirakawa.pbrt.java.core.model.shape.ShapeAdts;
 import com.github.nhirakawa.pbrt.java.core.model.shape.Sphere;
 import com.github.nhirakawa.pbrt.java.core.model.shape.TriangleMesh;
 import com.github.nhirakawa.pbrt.java.core.model.transform.LookAt;
-import com.github.nhirakawa.pbrt.java.parse.factory.CameraFactory;
-import com.github.nhirakawa.pbrt.java.parse.factory.ImageFactory;
-import com.github.nhirakawa.pbrt.java.parse.factory.IntegratorFactory;
-import com.github.nhirakawa.pbrt.java.parse.factory.LightSourceFactory;
-import com.github.nhirakawa.pbrt.java.parse.factory.SamplerFactory;
-import com.github.nhirakawa.pbrt.java.parse.factory.ShapeFactory;
-import com.github.nhirakawa.pbrt.java.parse.model.Parameter;
-import com.github.nhirakawa.pbrt.java.parse.model.Parameters;
-import com.github.nhirakawa.pbrt.java.parse.model.ParameterUtils;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.BdptIntegratorContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ConeShapeContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.CurveShapeContext;
@@ -64,6 +55,15 @@ import com.github.nhirakawa.pbrt.java.parse.PbrtParser.TriangleMeshShapeContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ValueContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.WhittedIntegratorContext;
 import com.github.nhirakawa.pbrt.java.parse.PbrtParser.ZeroTwoSequenceSamplerContext;
+import com.github.nhirakawa.pbrt.java.parse.factory.CameraFactory;
+import com.github.nhirakawa.pbrt.java.parse.factory.ImageFactory;
+import com.github.nhirakawa.pbrt.java.parse.factory.IntegratorFactory;
+import com.github.nhirakawa.pbrt.java.parse.factory.LightSourceFactory;
+import com.github.nhirakawa.pbrt.java.parse.factory.SamplerFactory;
+import com.github.nhirakawa.pbrt.java.parse.factory.ShapeFactory;
+import com.github.nhirakawa.pbrt.java.parse.model.Parameter;
+import com.github.nhirakawa.pbrt.java.parse.model.ParameterUtils;
+import com.github.nhirakawa.pbrt.java.parse.model.Parameters;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
 import java.io.IOException;
@@ -78,9 +78,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PbrtParseListener extends PbrtBaseListener {
-  private static final Logger LOG = LoggerFactory.getLogger(
-    PbrtParseListener.class
-  );
+  private static final Logger LOG = LoggerFactory.getLogger(PbrtParseListener.class);
 
   private final PbrtScene.Builder sceneBuilder;
 
@@ -95,25 +93,13 @@ public class PbrtParseListener extends PbrtBaseListener {
   // BEGIN SCENE-WIDE RENDERING OPTIONS
   @Override
   public void exitLookAt(LookAtContext lookAtContext) {
-    double lookAtEyeX = Double.parseDouble(
-      lookAtContext.lookAtEyeX().getText()
-    );
-    double lookAtEyeY = Double.parseDouble(
-      lookAtContext.lookAtEyeY().getText()
-    );
-    double lookAtEyeZ = Double.parseDouble(
-      lookAtContext.lookAtEyeZ().getText()
-    );
+    double lookAtEyeX = Double.parseDouble(lookAtContext.lookAtEyeX().getText());
+    double lookAtEyeY = Double.parseDouble(lookAtContext.lookAtEyeY().getText());
+    double lookAtEyeZ = Double.parseDouble(lookAtContext.lookAtEyeZ().getText());
 
-    double lookAtPointX = Double.parseDouble(
-      lookAtContext.lookAtPointX().getText()
-    );
-    double lookAtPointY = Double.parseDouble(
-      lookAtContext.lookAtPointY().getText()
-    );
-    double lookAtPointZ = Double.parseDouble(
-      lookAtContext.lookAtPointZ().getText()
-    );
+    double lookAtPointX = Double.parseDouble(lookAtContext.lookAtPointX().getText());
+    double lookAtPointY = Double.parseDouble(lookAtContext.lookAtPointY().getText());
+    double lookAtPointZ = Double.parseDouble(lookAtContext.lookAtPointZ().getText());
 
     double lookAtUpX = Double.parseDouble(lookAtContext.lookAtUpX().getText());
     double lookAtUpY = Double.parseDouble(lookAtContext.lookAtUpY().getText());
@@ -133,9 +119,7 @@ public class PbrtParseListener extends PbrtBaseListener {
       .build();
     LOG.debug("LookAt {}", lookAt);
 
-    sceneBuilder.addSceneWideRenderingOptions(
-      SceneWideRenderingOptions.LOOK_AT(lookAt)
-    );
+    sceneBuilder.addSceneWideRenderingOptions(SceneWideRenderingOptions.LOOK_AT(lookAt));
   }
 
   // BEGIN CAMERAS
@@ -143,15 +127,11 @@ public class PbrtParseListener extends PbrtBaseListener {
   public void exitPerspectiveCamera(PerspectiveCameraContext ctx) {
     Parameters parameters = toParameters(ctx.parameterList());
 
-    PerspectiveCamera perspectiveCamera = CameraFactory.toPerspectiveCamera(
-      parameters
-    );
+    PerspectiveCamera perspectiveCamera = CameraFactory.toPerspectiveCamera(parameters);
 
     CameraAdt camera = CameraAdts.PERSPECTIVE_CAMERA(perspectiveCamera);
 
-    sceneBuilder.addSceneWideRenderingOptions(
-      SceneWideRenderingOptions.CAMERA(camera)
-    );
+    sceneBuilder.addSceneWideRenderingOptions(SceneWideRenderingOptions.CAMERA(camera));
   }
 
   @Override
@@ -214,9 +194,7 @@ public class PbrtParseListener extends PbrtBaseListener {
   public void exitPathIntegrator(PathIntegratorContext ctx) {
     Parameters parameters = toParameters(ctx.parameterList());
 
-    PathIntegrator pathIntegrator = IntegratorFactory.toPathIntegrator(
-      parameters
-    );
+    PathIntegrator pathIntegrator = IntegratorFactory.toPathIntegrator(parameters);
 
     IntegratorAdt integratorAdt = IntegratorAdts.PATH(pathIntegrator);
 
@@ -231,9 +209,7 @@ public class PbrtParseListener extends PbrtBaseListener {
   }
 
   @Override
-  public void exitDirectLightingIntegrator(
-    DirectLightingIntegratorContext ctx
-  ) {
+  public void exitDirectLightingIntegrator(DirectLightingIntegratorContext ctx) {
     throw new UnsupportedOperationException();
   }
 
@@ -260,9 +236,7 @@ public class PbrtParseListener extends PbrtBaseListener {
 
     ImageFilm imageFilm = ImageFactory.toImage(parameters);
 
-    sceneBuilder.addSceneWideRenderingOptions(
-      SceneWideRenderingOptions.FILM(imageFilm)
-    );
+    sceneBuilder.addSceneWideRenderingOptions(SceneWideRenderingOptions.FILM(imageFilm));
   }
 
   // BEGIN SHAPES
@@ -328,9 +302,7 @@ public class PbrtParseListener extends PbrtBaseListener {
       parameters
     );
 
-    LightSourceAdt lightSourceAdt = LightSourceAdts.INFINITE(
-      infiniteLightSource
-    );
+    LightSourceAdt lightSourceAdt = LightSourceAdts.INFINITE(infiniteLightSource);
 
     sceneBuilder.addSceneObjects(SceneObjects.LIGHT_SOURCE(lightSourceAdt));
   }
@@ -354,9 +326,7 @@ public class PbrtParseListener extends PbrtBaseListener {
     super.exitEveryRule(parserRuleContext);
   }
 
-  private static Parameters toParameters(
-    ParameterListContext parameterListContext
-  ) {
+  private static Parameters toParameters(ParameterListContext parameterListContext) {
     List<Parameter> parameterList = parameterListContext
       .parameter()
       .stream()

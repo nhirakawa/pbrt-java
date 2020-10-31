@@ -1,9 +1,8 @@
 package com.github.nhirakawa.pbrt.java.core.model.geometry;
 
-import org.immutables.value.Value;
-
 import com.github.nhirakawa.pbrt.java.core.model.util.NaNChecker;
 import com.google.common.base.Preconditions;
+import org.immutables.value.Value;
 
 public interface Vector2<T extends Number> {
   T getX();
