@@ -235,7 +235,7 @@ pbrt : sceneWideRenderingOption* world EOF ;
 
 // lexer rules
 NUMBER
-  : DIGIT*? '.' DIGIT*
+  : '-'? DIGIT*? '.' DIGIT*
   | '.' DIGIT+
   | '-' DIGIT+
   | DIGIT+
