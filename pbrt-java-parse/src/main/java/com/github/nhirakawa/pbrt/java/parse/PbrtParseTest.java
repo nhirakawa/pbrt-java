@@ -1,5 +1,6 @@
 package com.github.nhirakawa.pbrt.java.parse;
 
+import java.nio.file.Paths;
 import org.antlr.v4.gui.TestRig;
 
 public class PbrtParseTest {
@@ -17,7 +18,16 @@ public class PbrtParseTest {
         "-gui",
         "-diagnostics",
         "-trace",
-        "C:\\Users\\Nick\\workspace\\pbrt-java\\pbrt-java-parse\\src\\main\\resources\\ball.pbrt"
+        Paths
+          .get(
+            System.getProperty("user.dir"),
+            "pbrt-java-parse",
+            "src",
+            "main",
+            "resources",
+            "ball.pbrt"
+          )
+          .toString()
       }
     )
     .process();

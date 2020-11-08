@@ -2,13 +2,11 @@ package com.github.nhirakawa.pbrt.java.parse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.github.nhirakawa.pbrt.java.parse.PbrtParser.NumberLiteralContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-
 import org.junit.Test;
-
-import com.github.nhirakawa.pbrt.java.parse.PbrtParser.NumberLiteralContext;
 
 public class PbrtParserNumberTest {
 
