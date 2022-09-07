@@ -22,11 +22,12 @@ public class IncludePreprocessorTest {
       Resources.getResource("no-include.pbrt")
     );
 
-    String raw = Resources
-      .toString(Resources.getResource("no-include.pbrt"), StandardCharsets.UTF_8)
-      .trim();
+    String raw = Resources.toString(
+      Resources.getResource("no-include.pbrt"),
+      StandardCharsets.UTF_8
+    );
 
-    assertThat(processed).isEqualTo(raw);
+    assertThat(processed).isEqualToIgnoringWhitespace(raw);
   }
 
   @Test
