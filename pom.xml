@@ -26,7 +26,7 @@
     <guava.version>30.0-jre</guava.version>
     <immutable-style.version>4.0</immutable-style.version>
     <immutables.version>2.5.6</immutables.version>
-    <jackson.version>2.12.1</jackson.version>
+    <jackson.version>2.12.6.1</jackson.version>
     <java.compiler.version>11</java.compiler.version>
     <jsr305.version>3.0.2</jsr305.version>
     <logback.version>1.2.3</logback.version>
