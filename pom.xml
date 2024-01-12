@@ -29,7 +29,7 @@
     <jackson.version>2.14.2</jackson.version>
     <java.compiler.version>11</java.compiler.version>
     <jsr305.version>3.0.2</jsr305.version>
-    <logback.version>1.2.9</logback.version>
+    <logback.version>1.2.13</logback.version>
     <maven.compiler.version>3.8.0</maven.compiler.version>
     <maven.dependency.plugin.version>3.1.2</maven.dependency.plugin.version>
     <plugin.prettier.goal>write</plugin.prettier.goal>
